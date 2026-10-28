@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2338bdf8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23818cf8%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22url(%23g)%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%230f172a%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%2047%20L22%2017%20L33%2047%20M15.5%2037%20H28.5%22%2F%3E%3Ccircle%20cx%3D%2244%22%20cy%3D%2239%22%20r%3D%228%22%2F%3E%3Cpath%20d%3D%22M52%2031%20V47%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+  <title>Convert Case Pro — Transformador de Texto</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --primary-text: #0f172a;
+      --secondary-bg: #334155;
+      --secondary-hover: #475569;
+      --accent: #818cf8;
+      --danger: #ef4444;
+      --success: #10b981;
+      --badge-bg: #0369a1;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+      --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --mono: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-text: #ffffff;
+      --secondary-bg: #f1f5f9;
+      --secondary-hover: #e2e8f0;
+      --accent: #6366f1;
+      --danger: #dc2626;
+      --success: #059669;
+      --badge-bg: #e0f2fe;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-icon {
+      background: var(--secondary-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      background: var(--secondary-hover);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-val {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: var(--mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.2rem;
+    }
+
+    /* Editor Box */
+    .editor-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .tool-btn {
+      background: var(--secondary-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s;
+    }
+
+    .tool-btn:hover {
+      background: var(--secondary-hover);
+    }
+
+    .tool-btn.primary {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tool-btn.primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .tool-btn.danger {
+      color: var(--danger);
+    }
+
+    .tool-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+    }
+
+    textarea#editor {
+      width: 100%;
+      min-height: 220px;
+      max-height: 550px;
+      resize: vertical;
+      background: transparent;
+      border: none;
+      padding: 1rem 1.25rem;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 1rem;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    textarea#editor::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    /* Find & Replace Box */
+    .find-replace-bar {
+      display: none;
+      background: var(--card-bg);
+      border-top: 1px solid var(--card-border);
+      padding: 0.75rem 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .find-replace-bar.open {
+      display: flex;
+    }
+
+    .input-sm {
+      background: var(--secondary-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .checkbox-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+    }
+
+    /* Actions Sections */
+    .sections-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .action-btn {
+      background: var(--secondary-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .action-btn:hover {
+      background: var(--secondary-hover);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .btn-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Toast Notification */
+    .icon {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--card-border);
+      background: var(--card-bg);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .btn-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      .toolbar-group {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .tool-btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Icon sprite (Lucide, MIT) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8M16 17H8M10 9H8"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+    <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  </svg>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <svg class="logo-icon" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="ccp-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#38bdf8"/>
+            <stop offset="1" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="14" fill="url(#ccp-g)"/>
+        <g fill="none" stroke="#0f172a" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke-width="3.5" d="M20 16 Q31 8 42 16 M40.1 10.3 L42 16 L36 15.9"/>
+          <path stroke-width="5" d="M13.5 48 L23.5 22 L33.5 48 M17.5 39 H29.5"/>
+          <circle stroke-width="5" cx="43.5" cy="41" r="7"/>
+          <path stroke-width="5" d="M50.5 34 V48"/>
+        </g>
+      </svg>
+      <div>
+        <div class="brand-title">Convert Case Pro</div>
+        <div class="brand-sub">Suíte Completa de Transformação e Formatação de Texto</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="themeToggle" title="Alternar Modo Escuro / Claro">
+        <svg class="icon" aria-hidden="true"><use id="themeIcon" href="#i-sun"/></svg> Tema
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Live Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-val" id="statChars">0</div>
+        <div class="stat-label">Caracteres</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statCharsNoSpace">0</div>
+        <div class="stat-label">Sem Espaços</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statWords">0</div>
+        <div class="stat-label">Palavras</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statLines">0</div>
+        <div class="stat-label">Linhas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statSentences">0</div>
+        <div class="stat-label">Frases</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statReadTime">0s</div>
+        <div class="stat-label">Leitura Estimada</div>
+      </div>
+    </div>
+
+    <!-- Main Text Editor -->
+    <div class="editor-section">
+      <div class="editor-toolbar">
+        <div class="toolbar-group">
+          <button class="tool-btn primary" id="btnCopy" title="Copiar texto">
+            <svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar
+          </button>
+          <button class="tool-btn" id="btnPaste" title="Colar da área de transferência">
+            <svg class="icon" aria-hidden="true"><use href="#i-paste"/></svg> Colar
+          </button>
+          <button class="tool-btn" id="btnDownload" title="Baixar arquivo de texto .txt">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Baixar .txt
+          </button>
+          <button class="tool-btn" id="btnUndo" title="Desfazer (Ctrl+Z)">
+            <svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg> Desfazer
+          </button>
+          <button class="tool-btn" id="btnRedo" title="Refazer (Ctrl+Y)">
+            <svg class="icon" aria-hidden="true"><use href="#i-redo"/></svg> Refazer
+          </button>
+        </div>
+        <div class="toolbar-group">
+          <button class="tool-btn" id="btnFindToggle" title="Localizar e Substituir">
+            <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg> Localizar / Substituir
+          </button>
+          <button class="tool-btn" id="btnSample" title="Preencher com texto de exemplo">
+            <svg class="icon" aria-hidden="true"><use href="#i-file-text"/></svg> Exemplo
+          </button>
+          <button class="tool-btn danger" id="btnClear" title="Limpar todo o texto">
+            <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg> Limpar
+          </button>
+        </div>
+      </div>
+
+      <!-- Find & Replace Sub-Bar -->
+      <div class="find-replace-bar" id="findBar">
+        <input type="text" id="findInput" class="input-sm" placeholder="Localizar...">
+        <input type="text" id="replaceInput" class="input-sm" placeholder="Substituir por...">
+        <label class="checkbox-label">
+          <input type="checkbox" id="matchCase"> Diferenciar maiúsc./minúsc.
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="useRegex"> Expressão Regular (Regex)
+        </label>
+        <button class="tool-btn primary" id="btnExecuteReplace">Substituir Tudo</button>
+      </div>
+
+      <textarea id="editor" placeholder="Digite ou cole seu texto aqui para converter instantaneamente..." spellcheck="false" autofocus></textarea>
+    </div>
+
+    <!-- Transformation Categories -->
+    <div class="sections-container">
+
+      <!-- Textual Cases -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-type"/></svg> Casos Textuais Clássicos</div>
+        </div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="applyTransform('sentenceCase')">
+            <span class="btn-name">Sentence case</span>
+            <span class="btn-desc">Primeira letra da frase maiúscula</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('lowerCase')">
+            <span class="btn-name">lower case</span>
+            <span class="btn-desc">tudo minúsculo</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('upperCase')">
+            <span class="btn-name">UPPER CASE</span>
+            <span class="btn-desc">TUDO MAIÚSCULO</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('capitalizedCase')">
+            <span class="btn-name">Capitalized Case</span>
+            <span class="btn-desc">Primeira Letra De Cada Palavra</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('titleCase')">
+            <span class="btn-name">Title Case</span>
+            <span class="btn-desc">Estilo Título (respeita artigos/preposições)</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('alternatingCase')">
+            <span class="btn-name">aLtErNaTiNg cAsE</span>
+            <span class="btn-desc">Letras alternadas minúsculas e maiúsculas</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('inverseCase')">
+            <span class="btn-name">InVeRsE cAsE</span>
+            <span class="btn-desc">Inverte maiúsculas e minúsculas</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Developer & Programming Cases -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg> Programação & Identificadores</div>
+        </div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="applyTransform('camelCase')">
+            <span class="btn-name">camelCase</span>
+            <span class="btn-desc">primeiraMinusculaSeguintesMaiusculas</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('pascalCase')">
+            <span class="btn-name">PascalCase</span>
+            <span class="btn-desc">TodasPalavrasMaiusculas</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('snakeCase')">
+            <span class="btn-name">snake_case</span>
+            <span class="btn-desc">palavras_com_sublinhado</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('constantCase')">
+            <span class="btn-name">CONSTANT_CASE</span>
+            <span class="btn-desc">MAIUSCULA_COM_SUBLINHADO</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('kebabCase')">
+            <span class="btn-name">kebab-case</span>
+            <span class="btn-desc">palavras-com-hifen</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('cobolCase')">
+            <span class="btn-name">COBOL-CASE</span>
+            <span class="btn-desc">MAIUSCULAS-COM-HIFEN</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('dotCase')">
+            <span class="btn-name">dot.case</span>
+            <span class="btn-desc">palavras.com.ponto</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('pathCase')">
+            <span class="btn-name">path/case</span>
+            <span class="btn-desc">palavras/com/barra</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('slugify')">
+            <span class="btn-name">Slugify (URL)</span>
+            <span class="btn-desc">slug-amigavel-sem-acentos</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('userName')">
+            <span class="btn-name">Nome de Usuário</span>
+            <span class="btn-desc">primeiro.ultimo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formatting & Line Utilities -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-eraser"/></svg> Limpeza, Linhas & Formatação</div>
+        </div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="applyTransform('removeAccents')">
+            <span class="btn-name">Remover Acentos</span>
+            <span class="btn-desc">á, é, ç, õ → a, e, c, o</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('cleanSpaces')">
+            <span class="btn-name">Limpar Espaços Extras</span>
+            <span class="btn-desc">Remove espaços duplos e pontas</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('removeEmptyLines')">
+            <span class="btn-name">Remover Linhas Vazias</span>
+            <span class="btn-desc">Elimina linhas em branco</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('removeDuplicateLines')">
+            <span class="btn-name">Remover Linhas Duplicadas</span>
+            <span class="btn-desc">Mantém apenas linhas únicas</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('sortAZ')">
+            <span class="btn-name">Ordenar Linhas A-Z</span>
+            <span class="btn-desc">Ordem alfabética crescente</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('sortZA')">
+            <span class="btn-name">Ordenar Linhas Z-A</span>
+            <span class="btn-desc">Ordem alfabética decrescente</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('toggleLineNumbers')">
+            <span class="btn-name">Numeração de Linhas</span>
+            <span class="btn-desc">Adiciona ou remove 1., 2., 3.</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('stripHtml')">
+            <span class="btn-name">Remover Tags HTML</span>
+            <span class="btn-desc">Extrai apenas texto puro</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('formatJson')">
+            <span class="btn-name">Formatar JSON (Beautify)</span>
+            <span class="btn-desc">Indenta JSON com 2 espaços</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('minifyJson')">
+            <span class="btn-name">Minificar JSON</span>
+            <span class="btn-desc">Compacta JSON em uma linha</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('extractUrls')">
+            <span class="btn-name">Extrair URLs / Links</span>
+            <span class="btn-desc">Lista todos links encontrados</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('extractEmails')">
+            <span class="btn-name">Extrair E-mails</span>
+            <span class="btn-desc">Lista todos os e-mails do texto</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Styles, Encoding & Effects -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg> Codificação & Efeitos Especiais</div>
+        </div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="applyTransform('reverseText')">
+            <span class="btn-name">Inverter Caracteres</span>
+            <span class="btn-desc">otxet od oremiroP</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('reverseWords')">
+            <span class="btn-name">Inverter Palavras</span>
+            <span class="btn-desc">palavras as Inverte</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('wideText')">
+            <span class="btn-name">Ｗｉｄｅ Ｔｅｘｔ</span>
+            <span class="btn-desc">Texto com largura total (Fullwidth)</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('strikethrough')">
+            <span class="btn-name">T̶a̶c̶h̶a̶d̶o̶</span>
+            <span class="btn-desc">Riscado no meio</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('underline')">
+            <span class="btn-name">S̲u̲b̲l̲i̲n̲h̲a̲d̲o̲</span>
+            <span class="btn-desc">Traço inferior unicode</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('upsideDown')">
+            <span class="btn-name">uʍop ǝpısdn</span>
+            <span class="btn-desc">Texto de cabeça para baixo</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('toBase64')">
+            <span class="btn-name">Base64 Encode</span>
+            <span class="btn-desc">Texto puro → Base64 UTF-8</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('fromBase64')">
+            <span class="btn-name">Base64 Decode</span>
+            <span class="btn-desc">Base64 → Texto original</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('urlEncode')">
+            <span class="btn-name">URL Encode</span>
+            <span class="btn-desc">Codifica caracteres especiais</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('urlDecode')">
+            <span class="btn-name">URL Decode</span>
+            <span class="btn-desc">Decodifica %20, %C3%A7, etc.</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('toBinary')">
+            <span class="btn-name">Texto → Binário</span>
+            <span class="btn-desc">01001111 01101001</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('fromBinary')">
+            <span class="btn-name">Binário → Texto</span>
+            <span class="btn-desc">Converte bits em texto</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('toMorse')">
+            <span class="btn-name">Texto → Código Morse</span>
+            <span class="btn-desc">... --- ...</span>
+          </button>
+          <button class="action-btn" onclick="applyTransform('fromMorse')">
+            <span class="btn-name">Morse → Texto</span>
+            <span class="btn-desc">Converte pontos/traços em texto</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span id="toastMsg">Ação executada com sucesso!</span></div>
+
+  <footer>
+    Convert Case Pro &bull; Funciona 100% offline &bull; Dev / Projetos
+  </footer>
+
+  <script>
+    // DOM Elements
+    const editor = document.getElementById('editor');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const statChars = document.getElementById('statChars');
+    const statCharsNoSpace = document.getElementById('statCharsNoSpace');
+    const statWords = document.getElementById('statWords');
+    const statLines = document.getElementById('statLines');
+    const statSentences = document.getElementById('statSentences');
+    const statReadTime = document.getElementById('statReadTime');
+
+    // Find and Replace
+    const btnFindToggle = document.getElementById('btnFindToggle');
+    const findBar = document.getElementById('findBar');
+    const findInput = document.getElementById('findInput');
+    const replaceInput = document.getElementById('replaceInput');
+    const matchCase = document.getElementById('matchCase');
+    const useRegex = document.getElementById('useRegex');
+    const btnExecuteReplace = document.getElementById('btnExecuteReplace');
+
+    // History for Undo / Redo
+    const historyStack = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
+
+    function saveHistory(text) {
+      if (historyStack.length > 0 && historyStack[historyIndex] === text) return;
+      // Cut any future redos
+      historyStack.splice(historyIndex + 1);
+      historyStack.push(text);
+      if (historyStack.length > MAX_HISTORY) {
+        historyStack.shift();
+      } else {
+        historyIndex++;
+      }
+      try {
+        localStorage.setItem('convert_case_saved_text', text);
+      } catch (e) {}
+    }
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    function updateStats() {
+      const val = editor.value;
+      statChars.textContent = val.length.toLocaleString('pt-BR');
+      statCharsNoSpace.textContent = val.replace(/\s/g, '').length.toLocaleString('pt-BR');
+      
+      const words = val.trim() === '' ? 0 : (val.trim().match(/\S+/g) || []).length;
+      statWords.textContent = words.toLocaleString('pt-BR');
+
+      const lines = val === '' ? 0 : val.split(/\r\n|\r|\n/).length;
+      statLines.textContent = lines.toLocaleString('pt-BR');
+
+      const sentences = val.trim() === '' ? 0 : (val.match(/[.!?]+(?:\s+|$)/g) || [1]).length;
+      statSentences.textContent = sentences.toLocaleString('pt-BR');
+
+      const minutes = words / 200;
+      if (minutes < 1) {
+        statReadTime.textContent = Math.ceil(minutes * 60) + 's';
+      } else {
+        statReadTime.textContent = Math.ceil(minutes) + ' min';
+      }
+    }
+
+    function setText(newText, msg = null) {
+      editor.value = newText;
+      saveHistory(newText);
+      updateStats();
+      if (msg) showToast(msg);
+    }
+
+    editor.addEventListener('input', () => {
+      saveHistory(editor.value);
+      updateStats();
+    });
+
+    // Theme Switcher
+    themeToggle.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme');
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', target);
+      themeIcon.setAttribute('href', target === 'dark' ? '#i-sun' : '#i-moon');
+      try {
+        localStorage.setItem('convert_case_theme', target);
+      } catch (e) {}
+    });
+
+    // Init Theme & Saved Text
+    try {
+      const savedTheme = localStorage.getItem('convert_case_theme');
+      if (savedTheme) {
+        document.body.setAttribute('data-theme', savedTheme);
+        themeIcon.setAttribute('href', savedTheme === 'dark' ? '#i-sun' : '#i-moon');
+      }
+      const savedText = localStorage.getItem('convert_case_saved_text');
+      if (savedText) {
+        editor.value = savedText;
+        saveHistory(savedText);
+      } else {
+        saveHistory('');
+      }
+    } catch (e) {
+      saveHistory('');
+    }
+    updateStats();
+
+    // Editor Tool buttons
+    document.getElementById('btnCopy').addEventListener('click', async () => {
+      if (!editor.value) {
+        showToast('Nada para copiar!');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(editor.value);
+        showToast('Copiado para a área de transferência!');
+      } catch (e) {
+        editor.select();
+        document.execCommand('copy');
+        showToast('Copiado!');
+      }
+    });
+
+    document.getElementById('btnPaste').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        setText(text, 'Texto colado!');
+      } catch (e) {
+        showToast('Use Ctrl+V para colar');
+      }
+    });
+
+    document.getElementById('btnDownload').addEventListener('click', () => {
+      if (!editor.value) {
+        showToast('O texto está vazio!');
+        return;
+      }
+      const blob = new Blob([editor.value], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `convert-case-${new Date().toISOString().slice(0, 10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('Arquivo baixado!');
+    });
+
+    document.getElementById('btnClear').addEventListener('click', () => {
+      if (!editor.value) return;
+      if (confirm('Deseja realmente limpar todo o texto?')) {
+        setText('', 'Texto limpo!');
+      }
+    });
+
+    document.getElementById('btnUndo').addEventListener('click', () => {
+      if (historyIndex > 0) {
+        historyIndex--;
+        editor.value = historyStack[historyIndex];
+        updateStats();
+        showToast('Desfeito');
+      } else {
+        showToast('Nada mais a desfazer');
+      }
+    });
+
+    document.getElementById('btnRedo').addEventListener('click', () => {
+      if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        editor.value = historyStack[historyIndex];
+        updateStats();
+        showToast('Refeito');
+      } else {
+        showToast('Nada mais a refazer');
+      }
+    });
+
+    // Keyboard Shortcuts (Ctrl+Z / Ctrl+Y)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          document.getElementById('btnRedo').click();
+        } else {
+          // let default or custom undo handle
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        document.getElementById('btnRedo').click();
+      }
+    });
+
+    document.getElementById('btnSample').addEventListener('click', () => {
+      const sample = `O Convert Case Pro é uma ferramenta essencial para desenvolvedores e redatores.
+Você pode transformar textos em camelCase, kebab-case, snake_case, PascalCase e CONSTANT_CASE!
+Também é possível remover acentos (á, é, í, ó, ú, ç), codificar em Base64, binário, ou código Morse.
+Experimente todas as funções disponíveis nos botões abaixo.`;
+      setText(sample, 'Texto de exemplo carregado!');
+    });
+
+    // Find and Replace Toggle
+    btnFindToggle.addEventListener('click', () => {
+      findBar.classList.toggle('open');
+      if (findBar.classList.contains('open')) {
+        findInput.focus();
+      }
+    });
+
+    btnExecuteReplace.addEventListener('click', () => {
+      const search = findInput.value;
+      const replace = replaceInput.value;
+      if (!search) {
+        showToast('Digite um termo para localizar');
+        return;
+      }
+      try {
+        let pattern;
+        let flags = 'g';
+        if (!matchCase.checked) flags += 'i';
+        if (useRegex.checked) {
+          pattern = new RegExp(search, flags);
+        } else {
+          pattern = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags);
+        }
+        const updated = editor.value.replace(pattern, replace);
+        setText(updated, 'Substituição concluída!');
+      } catch (err) {
+        alert('Erro na Expressão Regular: ' + err.message);
+      }
+    });
+
+    // Utility: Extract words cleanly handling unicode
+    function extractWords(text) {
+      if (!text) return [];
+      return text
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/[^a-zA-Z0-9\u00C0-\u00FF]+/g, ' ')
+        .trim()
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+    }
+
+    // Transformations
+    const transforms = {
+      // Sentence Case
+      sentenceCase: (str) => {
+        let lower = str.toLowerCase();
+        return lower.replace(/(^\s*|[.!?\n]\s*)([a-z\u00C0-\u00FF])/g, (m, prefix, char) => {
+          return prefix + char.toUpperCase();
+        });
+      },
+
+      // Lower Case
+      lowerCase: (str) => str.toLowerCase(),
+
+      // Upper Case
+      upperCase: (str) => str.toUpperCase(),
+
+      // Capitalized Case
+      capitalizedCase: (str) => {
+        return str.toLowerCase().replace(/(^|\s|[^\p{L}\p{N}])(\p{L})/gu, (m, p1, p2) => {
+          return p1 + p2.toUpperCase();
+        });
+      },
+
+      // Title Case (respecting minor words in PT and EN)
+      titleCase: (str) => {
+        const minorWords = new Set([
+          'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet',
+          'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pela', 'pelo', 'com', 'para', 'e', 'ou', 'um', 'uma'
+        ]);
+        return str.toLowerCase().replace(/\b(\w+)\b/g, (match, word, index) => {
+          if (index === 0 || !minorWords.has(word)) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          }
+          return word;
+        });
+      },
+
+      // Alternating Case
+      alternatingCase: (str) => {
+        let makeUpper = false;
+        let result = '';
+        for (const char of str) {
+          if (/[a-zA-Z\u00C0-\u00FF]/.test(char)) {
+            result += makeUpper ? char.toUpperCase() : char.toLowerCase();
+            makeUpper = !makeUpper;
+          } else {
+            result += char;
+          }
+        }
+        return result;
+      },
+
+      // Inverse Case
+      inverseCase: (str) => {
+        let result = '';
+        for (const char of str) {
+          if (char === char.toUpperCase()) {
+            result += char.toLowerCase();
+          } else {
+            result += char.toUpperCase();
+          }
+        }
+        return result;
+      },
+
+      // Developer cases
+      camelCase: (str) => {
+        const words = extractWords(str);
+        if (words.length === 0) return '';
+        return words.map((w, idx) => {
+          const lower = w.toLowerCase();
+          return idx === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
+        }).join('');
+      },
+
+      pascalCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => {
+          const lower = w.toLowerCase();
+          return lower.charAt(0).toUpperCase() + lower.slice(1);
+        }).join('');
+      },
+
+      snakeCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toLowerCase()).join('_');
+      },
+
+      constantCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toUpperCase()).join('_');
+      },
+
+      kebabCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toLowerCase()).join('-');
+      },
+
+      cobolCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toUpperCase()).join('-');
+      },
+
+      dotCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toLowerCase()).join('.');
+      },
+
+      pathCase: (str) => {
+        const words = extractWords(str);
+        return words.map(w => w.toLowerCase()).join('/');
+      },
+
+      slugify: (str) => {
+        return str
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      },
+
+      // Username: primeiro.ultimo (um nome por linha)
+      userName: (str) => {
+        return str
+          .split('\n')
+          .map(line => {
+            const words = line
+              .normalize('NFD')
+              .replace(/[̀-ͯ]/g, '')
+              .toLowerCase()
+              .replace(/[^a-z\s]/g, '')
+              .trim()
+              .split(/\s+/)
+              .filter(w => w.length > 0);
+            if (words.length === 0) return '';
+            if (words.length === 1) return words[0];
+            return words[0] + '.' + words[words.length - 1];
+          })
+          .join('\n');
+      },
+
+      // Text Utilities
+      removeAccents: (str) => {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      },
+
+      cleanSpaces: (str) => {
+        return str
+          .split('\n')
+          .map(line => line.trim().replace(/[ \t]+/g, ' '))
+          .join('\n')
+          .trim();
+      },
+
+      removeEmptyLines: (str) => {
+        return str.split(/\r?\n/).filter(line => line.trim() !== '').join('\n');
+      },
+
+      removeDuplicateLines: (str) => {
+        const lines = str.split(/\r?\n/);
+        const unique = Array.from(new Set(lines));
+        return unique.join('\n');
+      },
+
+      sortAZ: (str) => {
+        const lines = str.split(/\r?\n/);
+        lines.sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+        return lines.join('\n');
+      },
+
+      sortZA: (str) => {
+        const lines = str.split(/\r?\n/);
+        lines.sort((a, b) => b.localeCompare(a, 'pt-BR', { sensitivity: 'base' }));
+        return lines.join('\n');
+      },
+
+      toggleLineNumbers: (str) => {
+        const lines = str.split(/\r?\n/);
+        const hasNumbers = lines.length > 0 && /^\d+[\.\)\-]\s+/.test(lines[0]);
+        if (hasNumbers) {
+          return lines.map(line => line.replace(/^\d+[\.\)\-]\s+/, '')).join('\n');
+        } else {
+          const pad = String(lines.length).length;
+          return lines.map((line, idx) => `${String(idx + 1).padStart(pad, ' ')}. ${line}`).join('\n');
+        }
+      },
+
+      stripHtml: (str) => {
+        const doc = new DOMParser().parseFromString(str, 'text/html');
+        return doc.body.textContent || '';
+      },
+
+      formatJson: (str) => {
+        try {
+          const parsed = JSON.parse(str);
+          return JSON.stringify(parsed, null, 2);
+        } catch (e) {
+          alert('JSON Inválido: ' + e.message);
+          return str;
+        }
+      },
+
+      minifyJson: (str) => {
+        try {
+          const parsed = JSON.parse(str);
+          return JSON.stringify(parsed);
+        } catch (e) {
+          alert('JSON Inválido: ' + e.message);
+          return str;
+        }
+      },
+
+      extractUrls: (str) => {
+        const urls = str.match(/(https?:\/\/[^\s<>"'{}|\\^`]+)/g);
+        return urls ? Array.from(new Set(urls)).join('\n') : 'Nenhuma URL encontrada.';
+      },
+
+      extractEmails: (str) => {
+        const emails = str.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g);
+        return emails ? Array.from(new Set(emails)).join('\n') : 'Nenhum e-mail encontrado.';
+      },
+
+      // Effects & Encodings
+      reverseText: (str) => Array.from(str).reverse().join(''),
+
+      reverseWords: (str) => {
+        return str
+          .split('\n')
+          .map(line => line.split(/\s+/).reverse().join(' '))
+          .join('\n');
+      },
+
+      wideText: (str) => {
+        let result = '';
+        for (let i = 0; i < str.length; i++) {
+          const code = str.charCodeAt(i);
+          if (code === 32) {
+            result += '\u3000';
+          } else if (code >= 33 && code <= 126) {
+            result += String.fromCharCode(code + 65248);
+          } else {
+            result += str[i];
+          }
+        }
+        return result;
+      },
+
+      strikethrough: (str) => {
+        return Array.from(str).map(c => c === '\n' ? c : c + '\u0336').join('');
+      },
+
+      underline: (str) => {
+        return Array.from(str).map(c => c === '\n' ? c : c + '\u0332').join('');
+      },
+
+      upsideDown: (str) => {
+        const flipMap = {
+          'a': 'ɐ', 'b': 'q', 'c': 'ɔ', 'd': 'p', 'e': 'ǝ', 'f': 'ɟ', 'g': 'ƃ', 'h': 'ɥ', 'i': 'ᴉ', 'j': 'ɾ',
+          'k': 'ʞ', 'l': 'l', 'm': 'ɯ', 'n': 'u', 'o': 'o', 'p': 'd', 'q': 'b', 'r': 'ɹ', 's': 's', 't': 'ʇ',
+          'u': 'n', 'v': 'ʌ', 'w': 'ʍ', 'x': 'x', 'y': 'ʎ', 'z': 'z',
+          'A': '∀', 'B': 'ᗺ', 'C': 'Ɔ', 'D': 'ᗡ', 'E': 'Ǝ', 'F': 'Ⅎ', 'G': '⅁', 'H': 'H', 'I': 'I', 'J': 'ſ',
+          'K': 'ʞ', 'L': '˥', 'M': 'W', 'N': 'N', 'O': 'O', 'P': 'Ԁ', 'Q': 'Ό', 'R': 'ᴚ', 'S': 'S', 'T': '⊥',
+          'U': '∩', 'V': 'Λ', 'W': 'M', 'X': 'X', 'Y': '⅄', 'Z': 'Z',
+          '1': '⇂', '2': 'ᄅ', '3': 'Ɛ', '4': 'ㄣ', '5': 'ϛ', '6': '9', '7': 'ㄥ', '8': '8', '9': '6', '0': '0',
+          '.': '˙', ',': '\'', '\'': ',', '"': '„', '?': '¿', '!': '¡', '(': ')', ')': '(', '[': ']', ']': '[',
+          '{': '}', '}': '{', '<': '>', '>': '<', '&': '⅋', '_': '‾'
+        };
+        return Array.from(str).reverse().map(c => flipMap[c] || c).join('');
+      },
+
+      toBase64: (str) => {
+        try {
+          const bytes = new TextEncoder().encode(str);
+          let binary = '';
+          for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          return btoa(binary);
+        } catch (e) {
+          alert('Erro ao codificar Base64: ' + e.message);
+          return str;
+        }
+      },
+
+      fromBase64: (str) => {
+        try {
+          const binary = atob(str.trim());
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          return new TextDecoder().decode(bytes);
+        } catch (e) {
+          alert('Erro ao decodificar Base64: Formato inválido.');
+          return str;
+        }
+      },
+
+      urlEncode: (str) => encodeURIComponent(str),
+
+      urlDecode: (str) => {
+        try {
+          return decodeURIComponent(str);
+        } catch (e) {
+          alert('Erro ao decodificar URL: Formato inválido.');
+          return str;
+        }
+      },
+
+      toBinary: (str) => {
+        const bytes = new TextEncoder().encode(str);
+        return Array.from(bytes).map(b => b.toString(2).padStart(8, '0')).join(' ');
+      },
+
+      fromBinary: (str) => {
+        try {
+          const cleaned = str.trim().split(/\s+/);
+          const bytes = new Uint8Array(cleaned.map(b => parseInt(b, 2)));
+          return new TextDecoder().decode(bytes);
+        } catch (e) {
+          alert('Erro ao converter binário para texto: Formato inválido.');
+          return str;
+        }
+      },
+
+      toMorse: (str) => {
+        const morseMap = {
+          'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+          'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+          'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+          'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+          'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+          '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+          '8': '---..', '9': '----.', ' ': '/'
+        };
+        const clean = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+        return Array.from(clean).map(c => morseMap[c] || c).join(' ');
+      },
+
+      fromMorse: (str) => {
+        const morseReversed = {
+          '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F',
+          '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L',
+          '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R',
+          '...': 'S', '-': 'T', '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X',
+          '-.--': 'Y', '--..': 'Z', '-----': '0', '.----': '1', '..---': '2',
+          '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7',
+          '---..': '8', '----.': '9', '/': ' '
+        };
+        return str
+          .trim()
+          .split(/\s+/)
+          .map(code => morseReversed[code] || code)
+          .join('');
+      }
+    };
+
+    function applyTransform(type) {
+      if (!editor.value) {
+        showToast('Digite algum texto primeiro!');
+        return;
+      }
+      if (typeof transforms[type] === 'function') {
+        const converted = transforms[type](editor.value);
+        setText(converted, 'Transformação aplicada!');
+      }
+    }
+  </script>
+</body>
+</html>
